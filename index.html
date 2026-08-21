@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Antibiotici in Chirurgia e Terapia Intensiva</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Antibiotici">
+<style>
+  :root{
+    --teal:#0d7d6f; --teal-light:#e7f5f2;
+    --indigo:#3730a3; --indigo-light:#eef0fd;
+    --ink:#1e2430; --sub:#5b6472; --line:#e2e6ec; --bg:#f6f7f9; --card:#ffffff;
+    --ok:#0d9488; --warn:#b45309;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); -webkit-font-smoothing:antialiased;}
+  header{position:sticky; top:0; z-index:20; background:linear-gradient(135deg,#0b4a41,#0d7d6f); color:#fff; padding:16px 16px 0; box-shadow:0 2px 10px rgba(0,0,0,.12);}
+  header h1{margin:0 0 2px; font-size:1.15rem; font-weight:700;}
+  header p{margin:0 0 12px; font-size:.78rem; opacity:.85;}
+  .tabs{display:flex; gap:6px;}
+  .tab{flex:1; text-align:center; padding:10px 6px; border-radius:10px 10px 0 0; background:rgba(255,255,255,.12); font-size:.86rem; font-weight:600; cursor:pointer; user-select:none; transition:background .15s;}
+  .tab.active{background:var(--bg); color:var(--ink);}
+  .tab .sub{display:block; font-weight:400; font-size:.66rem; opacity:.75;}
+  main{max-width:900px; margin:0 auto; padding:14px 12px 90px;}
+  .section{display:none;}
+  .section.active{display:block;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; margin-bottom:14px; overflow:hidden; box-shadow:0 1px 2px rgba(20,30,50,.04);}
+  .card-head{padding:13px 16px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:10px;}
+  .card-head h2{margin:0; font-size:.96rem; font-weight:700; line-height:1.3;}
+  .card-head .code{display:block; font-size:.68rem; font-weight:500; color:var(--sub); margin-top:2px;}
+  .chir .card-head{border-left:4px solid var(--teal);}
+  .ti .card-head{border-left:4px solid var(--indigo);}
+  .chevron{font-size:.8rem; color:var(--sub); transition:transform .2s; flex-shrink:0;}
+  .card.open .chevron{transform:rotate(180deg);}
+  .card-body{max-height:0; overflow:hidden; transition:max-height .25s ease;}
+  .card.open .card-body{max-height:none;}
+  .card-body-inner{padding:0 16px 16px;}
+  h3.sub-h{font-size:.82rem; font-weight:700; margin:14px 0 6px; color:var(--ink);}
+  h3.sub-h:first-child{margin-top:0;}
+  table{width:100%; border-collapse:collapse; font-size:.78rem; margin-bottom:4px;}
+  caption{caption-side:top; text-align:left; font-size:.72rem; color:var(--sub); padding-bottom:4px;}
+  th,td{border:1px solid var(--line); padding:6px 7px; text-align:left; vertical-align:top;}
+  th{background:#f1f4f9; font-weight:700; font-size:.7rem; text-transform:uppercase; letter-spacing:.02em; color:var(--sub);}
+  .chir th{background:var(--teal-light);}
+  .ti th{background:var(--indigo-light);}
+  td.num{white-space:nowrap;}
+  .note{font-size:.74rem; color:var(--sub); margin:6px 0 0; line-height:1.5;}
+  .note.warn{color:var(--warn);}
+  .tbl-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  .source{font-size:.68rem; color:var(--sub); opacity:.85; margin-top:8px; padding-top:8px; border-top:1px dashed var(--line);}
+  .drug{font-weight:600;}
+  .calc{background:#f8fafc; border:1px solid var(--line); border-radius:10px; padding:12px; margin-top:6px;}
+  .calc-row{display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap;}
+  .calc-field{flex:1; min-width:130px;}
+  .calc-field label{display:block; font-size:.72rem; font-weight:600; color:var(--sub); margin-bottom:4px;}
+  select{width:100%; padding:8px; border:1px solid #cfd6e0; border-radius:8px; font-size:.85rem; background:#fff;}
+  .calc-out{background:#fff; border:1px solid var(--line); border-radius:8px; padding:10px 12px; font-size:.85rem;}
+  .calc-out .big{font-size:1.2rem; font-weight:700; color:var(--teal);}
+  .ti .calc-out .big{color:var(--indigo);}
+  .calc-out .err{color:#b91c1c; font-size:.8rem;}
+  .badge-row{display:flex; gap:8px; margin:6px 0; flex-wrap:wrap;}
+  .badge{background:var(--teal-light); color:var(--teal); font-size:.72rem; font-weight:700; padding:4px 9px; border-radius:20px;}
+  .ti .badge{background:var(--indigo-light); color:var(--indigo);}
+  input[type="number"], input[type="text"]{width:100%; padding:8px; border:1px solid #cfd6e0; border-radius:8px; font-size:.85rem; background:#fff; font-family:inherit;}
+  .calc-out .steps{margin:0; padding-left:18px; font-size:.85rem; line-height:1.7;}
+  .calc-out .steps b{color:var(--ink);}
+  footer{max-width:900px; margin:0 auto; padding:6px 14px 30px; font-size:.72rem; color:var(--sub); line-height:1.6;}
+  footer strong{color:var(--ink);}
+  @media print{
+    header{position:static;}
+    .card-body{max-height:none !important;}
+    .card{page-break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Antibiotici in Chirurgia e Terapia Intensiva</h1>
+  <p>Schemi di dosaggio rapidi per consultazione clinica — profilassi chirurgica e terapia in TI</p>
+  <div class="tabs">
+    <div class="tab active" data-target="chirurgia">Profilassi chirurgica<span class="sub">antibiotico-profilassi</span></div>
+    <div class="tab" data-target="ti">Terapia Intensiva<span class="sub">terapia empirica · dosaggi</span></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ==================== PROFILASSI CHIRURGICA ==================== -->
+  <section id="chirurgia" class="section active chir">
+
+    <div class="card open">
+      <div class="card-head"><h2>Scelta dell'antibiotico per tipo di intervento</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Tipo di intervento</th><th>Farmaco di scelta</th><th>Allergia a beta-lattamici</th></tr></thead>
+          <tbody>
+            <tr><td>Cardiochirurgia / vascolare / toracica</td><td>Cefazolina (+ vancomicina se materiale protesico)</td><td>Vancomicina</td></tr>
+            <tr><td>Gastroduodenale (ulcera, neoplasia, bariatrica)</td><td>Cefazolina</td><td>Levofloxacina</td></tr>
+            <tr><td>Vie biliari</td><td>Cefazolina + metronidazolo</td><td>Metronidazolo + levofloxacina</td></tr>
+            <tr><td>Epatobiliopancreatica (es. duodenocefalopancreasectomia)</td><td>Piperacillina/tazobactam (o mirata su coltura biliare)</td><td>Levofloxacina + metronidazolo</td></tr>
+            <tr><td>Colorettale / appendicectomia</td><td>Cefazolina + metronidazolo</td><td>Metronidazolo + levofloxacina</td></tr>
+            <tr><td>Chirurgia generale (ernia, mammella, milza)</td><td>Cefazolina</td><td>Vancomicina</td></tr>
+            <tr><td>Taglio cesareo</td><td>Cefazolina</td><td>Clindamicina + gentamicina</td></tr>
+            <tr><td>Ginecologica (es. isterectomia)</td><td>Cefazolina + metronidazolo</td><td>Metronidazolo + gentamicina</td></tr>
+            <tr><td>Neurochirurgia</td><td>Cefazolina</td><td>Vancomicina</td></tr>
+            <tr><td>Ortopedica (incl. protesica)</td><td>Cefazolina</td><td>Vancomicina</td></tr>
+            <tr><td>Urologica pulita (no apertura vie urinarie/intestino)</td><td>Cefazolina</td><td>Clindamicina</td></tr>
+            <tr><td>Urologica con apertura intestino (es. cistectomia con condotto ileale)</td><td>Cefossitina (+ gentamicina se materiale protesico)</td><td>Gentamicina + clindamicina</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">La cefazolina è sicura nella maggior parte dei pazienti con allergia IgE-mediata (tipo I: anafilassi, orticaria) a penicillina/amoxicillina. È invece controindicata in caso di reazioni di ipersensibilità ritardata severa ai beta-lattamici (SJS/TEN, DRESS, AGEP): in questi casi utilizzare l'alternativa indicata. In caso di colonizzazione nota da MRSA, considerare l'aggiunta di vancomicina o clindamicina allo schema standard.</p>
+        <p class="source">Fonte: Bratzler DW et al. Clinical practice guidelines for antimicrobial prophylaxis in surgery (ASHP/IDSA/SIS/SHEA, 2013); adattamento da Stanford Health Care Surgical Antimicrobial Prophylaxis Guideline, rev. 2025.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Dose e ridosaggio intraoperatorio</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Farmaco</th><th>Dose standard</th><th>Ridosaggio (h)*</th></tr></thead>
+          <tbody>
+            <tr><td class="drug">Cefazolina</td><td>2 g (3 g se peso &gt;120 kg)</td><td class="num">4</td></tr>
+            <tr><td class="drug">Cefossitina</td><td>2 g</td><td class="num">2</td></tr>
+            <tr><td class="drug">Ampicillina/sulbactam</td><td>3 g</td><td class="num">2</td></tr>
+            <tr><td class="drug">Piperacillina/tazobactam</td><td>3,375 g</td><td class="num">2</td></tr>
+            <tr><td class="drug">Clindamicina</td><td>900 mg</td><td class="num">6</td></tr>
+            <tr><td class="drug">Metronidazolo</td><td>500 mg</td><td class="num">12</td></tr>
+            <tr><td class="drug">Vancomicina</td><td>&lt;80 kg: 1 g · 80–99 kg: 1,25 g · 100–120 kg: 1,5 g · &gt;120 kg: 2 g (infusione lenta, vedi nota)</td><td class="num">12</td></tr>
+            <tr><td class="drug">Levofloxacina</td><td>500 mg</td><td class="num">non richiesto</td></tr>
+            <tr><td class="drug">Ceftriaxone</td><td>2 g</td><td class="num">non richiesto</td></tr>
+            <tr><td class="drug">Gentamicina</td><td>5 mg/kg dose singola</td><td class="num">non richiesto</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">*Ridosaggio intraoperatorio raccomandato per interventi che superano circa 2 emivite del farmaco in pazienti con funzione renale normale; considerare ridosaggio anticipato in caso di perdita ematica importante (&gt;1500 ml), tranne per vancomicina e aminoglicosidi. Vancomicina: infondere in almeno 60 min per grammo (es. 1,5 g in 90 min, 2 g in 120 min) per ridurre il rischio di reazione da infusione ("red man syndrome"); analogamente ciprofloxacina/levofloxacina richiedono infusione prolungata (60–90 min).</p>
+        <p class="source">Fonte: Bratzler DW et al. 2013 (ASHP/IDSA/SIS/SHEA); Stanford Health Care Surgical Antimicrobial Prophylaxis Guideline, rev. 2025.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Timing della somministrazione</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Somministrare la dose preoperatoria <b>entro 60 minuti prima dell'incisione</b> per raggiungere concentrazioni tissutali adeguate.</p>
+        <p class="note">Eccezioni che richiedono un'infusione più lunga (fino a 120 minuti prima dell'incisione, per tollerabilità): <b>vancomicina, ciprofloxacina, levofloxacina, fluconazolo</b>.</p>
+        <p class="source">Fonte: Bratzler DW et al. 2013 (ASHP/IDSA/SIS/SHEA).</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Durata della profilassi postoperatoria</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Per gli interventi puliti e puliti-contaminati, <b>non sono necessarie dosi dopo la chiusura della ferita</b>, anche in presenza di drenaggio: le evidenze più recenti (CDC, SHEA/IDSA/APIC) non mostrano riduzione delle infezioni del sito chirurgico con la prosecuzione della profilassi, a fronte di un aumento di eventi avversi (C. difficile, danno renale acuto) e di emergenza di resistenze.</p>
+        <p class="note">Per le categorie in cui la prosecuzione postoperatoria è ancora considerata accettabile — chirurgia ortopedica con impianto protesico e cardiochirurgia — limitare la durata a <b>meno di 24 ore</b>.</p>
+        <p class="note warn">In presenza di infezione documentata prima dell'intervento, la terapia va indirizzata contro il patogeno causale (non si tratta più di profilassi): consultare infettivologia.</p>
+        <p class="source">Fonte: Calderwood MS et al. Strategies to prevent surgical site infections in acute-care hospitals: 2022 Update (SHEA/IDSA/APIC); CDC Guideline for Prevention of SSI 2017; Stanford Health Care Surgical Antimicrobial Prophylaxis Guideline, rev. 2025.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Calcolatore dose profilassi per peso</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Calcola la dose peso-based di cefazolina o vancomicina per la profilassi chirurgica.</p>
+        <div class="calc">
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Farmaco</label>
+              <select id="abxDrugSel">
+                <option value="cefazolina">Cefazolina</option>
+                <option value="vancomicina">Vancomicina</option>
+              </select>
+            </div>
+            <div class="calc-field">
+              <label>Peso corporeo (kg)</label>
+              <input type="number" id="abxWeight" step="1" min="0" value="70">
+            </div>
+          </div>
+          <div id="abxDoseOut" class="calc-out"></div>
+        </div>
+      </div></div>
+    </div>
+
+  </section>
+
+  <!-- ==================== TERAPIA INTENSIVA ==================== -->
+  <section id="ti" class="section ti">
+
+    <div class="card open">
+      <div class="card-head"><h2>Sepsi e shock settico — terapia empirica</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Avviare la terapia antibiotica empirica <b>entro 1 ora</b> dal riconoscimento di sepsi/shock settico, dopo prelievo di emocolture (senza ritardare l'inizio della terapia).</p>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Schema</th><th>Farmaci e dosi</th></tr></thead>
+          <tbody>
+            <tr><td>Ampio spettro standard</td><td><span class="drug">Piperacillina/tazobactam</span> 4,5 g ev ogni 6h (infusione estesa) <b>+</b> <span class="drug">Vancomicina</span> (dose da carico 25–30 mg/kg, poi 15–20 mg/kg ogni 8–12h, target guidato da AUC/MIC)</td></tr>
+            <tr><td>Alternativa carbapenemica (sospetta resistenza, esposizione recente a beta-lattamici)</td><td><span class="drug">Meropenem</span> 1 g ev ogni 8h <b>+</b> <span class="drug">Vancomicina</span> come sopra</td></tr>
+            <tr><td>Sospetta fonte addominale/pelvica/necrotizzante (copertura anaerobi)</td><td>Preferire piperacillina/tazobactam o carbapenemico (già attivi su anaerobi) rispetto a schemi privi di copertura anaerobica</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Rivalutare e restringere lo spettro (de-escalation) appena disponibili gli esiti colturali e l'antibiogramma, tipicamente a 48–72h.</p>
+        <p class="source">Fonte: Evans L et al. Surviving Sepsis Campaign: International Guidelines for Management of Sepsis and Septic Shock 2021 (SCCM/ESICM).</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Polmonite nosocomiale (HAP/VAP) — terapia empirica</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Coprire sempre <i>Pseudomonas aeruginosa</i> e altri Gram-negativi; aggiungere copertura anti-MRSA solo se presenti fattori di rischio per resistenza (terapia antibiotica ev negli ultimi 90 giorni, prevalenza locale di MRSA ≥10–20%, shock settico, o unità ad alta prevalenza di resistenza).</p>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Componente</th><th>Opzioni (sceglierne una per categoria)</th></tr></thead>
+          <tbody>
+            <tr><td>Beta-lattamico antipseudomonico</td><td><span class="drug">Piperacillina/tazobactam</span> 4,5 g ev ogni 6h, o <span class="drug">Cefepime</span> 2 g ev ogni 8h, o <span class="drug">Meropenem</span> 1 g ev ogni 8h</td></tr>
+            <tr><td>Secondo agente antipseudomonico (se doppia copertura indicata, es. shock/rischio MDR elevato)</td><td><span class="drug">Ciprofloxacina</span> 400 mg ev ogni 8h, o <span class="drug">Levofloxacina</span> 750 mg ev ogni 24h, o aminoglicoside</td></tr>
+            <tr><td>Copertura anti-MRSA (solo se fattori di rischio)</td><td><span class="drug">Vancomicina</span> (carico 25–30 mg/kg poi 15–20 mg/kg ogni 8–12h) o <span class="drug">Linezolid</span> 600 mg ev ogni 12h</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Durata di trattamento raccomandata: <b>7 giorni</b>, salvo evoluzione clinica sfavorevole. Rivalutare a 48–72h in base a colturali/antibiogramma.</p>
+        <p class="source">Fonte: Kalil AC et al. Management of Adults With Hospital-Acquired and Ventilator-Associated Pneumonia: 2016 Clinical Practice Guidelines (IDSA/ATS).</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Infezioni intra-addominali complicate — terapia empirica</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Contesto</th><th>Farmaci e dosi</th></tr></thead>
+          <tbody>
+            <tr><td>Acquisita in comunità, rischio basso-moderato</td><td><span class="drug">Ceftriaxone</span> 2 g ev ogni 24h + <span class="drug">Metronidazolo</span> 500 mg ev ogni 8h, oppure <span class="drug">Piperacillina/tazobactam</span> 4,5 g ev ogni 6h in monoterapia</td></tr>
+            <tr><td>Associata a cure sanitarie / rischio elevato (shock settico, immunocompromissione, chirurgia recente)</td><td><span class="drug">Piperacillina/tazobactam</span> 4,5 g ev ogni 6–8h (infusione estesa), o <span class="drug">Meropenem</span> 1 g ev ogni 8h ± <span class="drug">Vancomicina</span> se rischio MRSA/enterococco resistente</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Il controllo della fonte (drenaggio, chirurgia) è l'intervento più importante insieme alla terapia antibiotica precoce. Durata tipica dopo adeguato controllo della fonte: 4 giorni.</p>
+        <p class="source">Fonte: Huston JM et al. The Surgical Infection Society Guidelines on the Management of Intra-Abdominal Infection: 2024 Update.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Batteriemia associata a catetere venoso centrale — terapia empirica</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Componente</th><th>Farmaci e dosi</th></tr></thead>
+          <tbody>
+            <tr><td>Copertura Gram-positivi (incl. MRSA)</td><td><span class="drug">Vancomicina</span> (carico 25–30 mg/kg poi 15–20 mg/kg ogni 8–12h)</td></tr>
+            <tr><td>Copertura Gram-negativi (se instabilità emodinamica, neutropenia o colonizzazione nota)</td><td><span class="drug">Cefepime</span> 2 g ev ogni 8h o <span class="drug">Piperacillina/tazobactam</span> 4,5 g ev ogni 6h</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Valutare sempre la rimozione del catetere in caso di sepsi grave, shock settico, infezione da S. aureus, Candida o persistenza delle emocolture positive a 72h di terapia adeguata.</p>
+        <p class="source">Fonte: Mermel LA et al. Clinical Practice Guidelines for the Diagnosis and Management of Intravascular Catheter-Related Infection (IDSA).</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Interpretazione del liquor e meningite batterica</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <h3 class="sub-h">Valori normali del liquor (adulto)</h3>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Parametro</th><th>Valore normale</th></tr></thead>
+          <tbody>
+            <tr><td>Aspetto</td><td>Limpido</td></tr>
+            <tr><td>Pressione di apertura</td><td class="num">6–25 cmH₂O (60–250 mmH₂O)</td></tr>
+            <tr><td>Globuli bianchi</td><td class="num">&lt;5/µL, prevalenza linfomonocitaria</td></tr>
+            <tr><td>Proteine</td><td class="num">&lt;50 mg/dL</td></tr>
+            <tr><td>Rapporto glicorrachia/glicemia</td><td class="num">0,44–0,90</td></tr>
+            <tr><td>Lattato</td><td class="num">11,7–21,6 mg/dL (1,3–2,4 mmol/L)</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3 class="sub-h">Caratteristiche del liquor per tipo di infezione</h3>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Tipo</th><th>Cellularità</th><th>Glicorrachia</th><th>Proteine</th><th>Altri test utili</th></tr></thead>
+          <tbody>
+            <tr><td class="drug">Batterica tipica</td><td>1.000–5.000/µL, 80–90% neutrofili</td><td>&lt;40 mg/dL nel 50–60% dei casi; rapporto &lt;0,4 (80% sens., 98% spec.)</td><td>Quasi sempre elevate</td><td>Gram (spec. 97%), coltura, lattato &gt;35 mg/dL (93–95% sens., 94–99% spec. se prelevato prima dell'antibiotico)</td></tr>
+            <tr><td class="drug">Virale</td><td>100–1.000/µL, linfociti prevalenti (neutrofili possibili in fase precoce)</td><td>Solitamente normale</td><td>Normali o lievemente elevate (&lt;150 mg/dL)</td><td>PCR (test preferenziale, riduce uso inappropriato di antibiotici)</td></tr>
+            <tr><td class="drug">Tubercolare</td><td>5–300/µL (500–1.000 nel 20% dei casi), linfociti prevalenti</td><td>Bassa, mediana ~40 mg/dL</td><td>100–200 mg/dL</td><td>Colture multiple con Ziehl-Neelsen, PCR, adenosindeaminasi &gt;10 U/L</td></tr>
+            <tr><td class="drug">Fungina (non criptococcica)</td><td>Fino a poche centinaia/µL, possibile eosinofilia</td><td>Spesso ridotta</td><td>50–250 mg/dL</td><td>Beta-D-glucano, coltura fungina</td></tr>
+            <tr><td class="drug">Criptococcica</td><td>Lievemente elevata, linfociti prevalenti (può essere normale in HIV)</td><td>Solitamente &gt;40 mg/dL</td><td>Solitamente &lt;40 mg/dL</td><td>Antigene criptococcico, inchiostro di china</td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <h3 class="sub-h">Criteri ad alta probabilità di meningite batterica</h3>
+        <p class="note">La presenza di <b>uno solo</b> dei seguenti valori conferma la meningite batterica con probabilità &gt;99%: glicorrachia &lt;34 mg/dL, proteine &gt;220 mg/dL, globuli bianchi &gt;2.000/µL, neutrofili &gt;1.180/µL.</p>
+
+        <h3 class="sub-h">Bacterial Meningitis Score — supporto alla decisione</h3>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Criterio</th><th>Punti</th></tr></thead>
+          <tbody>
+            <tr><td>Gram del liquor positivo</td><td class="num">2</td></tr>
+            <tr><td>Neutrofili liquorali ≥1.000/µL</td><td class="num">1</td></tr>
+            <tr><td>Proteine liquorali ≥80 mg/dL</td><td class="num">1</td></tr>
+            <tr><td>Neutrofili ematici ≥10.000/µL</td><td class="num">1</td></tr>
+            <tr><td>Convulsioni all'esordio o prima della presentazione</td><td class="num">1</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">In assenza di <b>tutti</b> i criteri, il rischio di meningite batterica è molto basso (~0,1%; sensibilità 98% nella coorte di validazione pediatrica).</p>
+        <p class="note warn">Score validato principalmente in età pediatrica; nell'adulto la performance è meno solida. Va usato come supporto e mai per ritardare o negare l'antibiotico empirico quando il sospetto clinico è significativo: in caso di dubbio, trattare.</p>
+
+        <h3 class="sub-h">Terapia antibiotica empirica della meningite batterica</h3>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Popolazione</th><th>Farmaci e dosi</th></tr></thead>
+          <tbody>
+            <tr><td>Adulto immunocompetente, 2–50 anni</td><td><span class="drug">Vancomicina</span> (carico 25–30 mg/kg poi 15–20 mg/kg ev ogni 8–12h) <b>+</b> <span class="drug">Ceftriaxone</span> 2 g ev ogni 12h</td></tr>
+            <tr><td>Età &gt;50 anni, immunocompromesso, alcolismo/debilitazione (copertura Listeria)</td><td>Come sopra <b>+</b> <span class="drug">Ampicillina</span> 2 g ev ogni 4h</td></tr>
+            <tr><td>Trauma penetrante, post-neurochirurgia, derivazione liquorale (copertura Pseudomonas e Staphylococcus)</td><td><span class="drug">Vancomicina</span> (come sopra) <b>+</b> <span class="drug">Cefepime</span> 2 g ev ogni 8h (alternative: ceftazidime o meropenem 2 g ev ogni 8h)</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Aggiungere <span class="drug">desametasone</span> 0,15 mg/kg (tipicamente 10 mg) ev ogni 6h per 4 giorni, con la prima dose somministrata 10–20 minuti prima o insieme alla prima dose di antibiotico (non dopo): riduce la mortalità nella meningite pneumococcica dell'adulto.</p>
+        <p class="note warn">Non ritardare l'inizio della terapia empirica in attesa di neuroimaging o di risultati del liquor quando il sospetto clinico è elevato: eseguire emocolture, iniziare desametasone e antibiotico, poi procedere a rachicentesi/imaging.</p>
+        <p class="source">Fonte: Shahan B et al. Cerebrospinal Fluid Analysis. Am Fam Physician. 2021;103(7):422-428; Tunkel AR et al. Practice Guidelines for the Management of Bacterial Meningitis (IDSA, 2004); Nigrovic LE et al. Clinical prediction rule for identifying children with cerebrospinal fluid pleocytosis at very low risk of bacterial meningitis, JAMA 2007.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Dosaggi standard degli antibiotici principali in TI</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Farmaco</th><th>Dose standard (funzione renale normale)</th></tr></thead>
+          <tbody>
+            <tr><td class="drug">Piperacillina/tazobactam</td><td>4,5 g ev ogni 6–8h; infusione estesa (4h) consigliata nelle infezioni gravi/sepsi</td></tr>
+            <tr><td class="drug">Meropenem</td><td>1 g ev ogni 8h (2 g ogni 8h per infezioni SNC/fibrosi cistica/MIC elevate); infusione estesa (3h) consigliata</td></tr>
+            <tr><td class="drug">Cefepime</td><td>2 g ev ogni 8h (infezioni gravi/Pseudomonas); infusione estesa (4h) consigliata</td></tr>
+            <tr><td class="drug">Ceftriaxone</td><td>1–2 g ev ogni 24h (2 g ogni 12h per meningite)</td></tr>
+            <tr><td class="drug">Ampicillina/sulbactam</td><td>3 g ev ogni 6h</td></tr>
+            <tr><td class="drug">Aztreonam</td><td>1–2 g ev ogni 8h (allergia grave ai beta-lattamici, copertura solo Gram-negativi)</td></tr>
+            <tr><td class="drug">Ciprofloxacina</td><td>400 mg ev ogni 8–12h</td></tr>
+            <tr><td class="drug">Levofloxacina</td><td>750 mg ev ogni 24h (infezioni gravi/Pseudomonas)</td></tr>
+            <tr><td class="drug">Metronidazolo</td><td>500 mg ev ogni 8h</td></tr>
+            <tr><td class="drug">Clindamicina</td><td>600–900 mg ev ogni 8h</td></tr>
+            <tr><td class="drug">Linezolid</td><td>600 mg ev ogni 12h</td></tr>
+            <tr><td class="drug">Daptomicina</td><td>Cute/tessuti molli: 4–6 mg/kg ev ogni 24h · Batteriemia/endovascolare: 8 mg/kg ev ogni 24h (non utilizzare in polmonite: inattivata dal surfattante)</td></tr>
+            <tr><td class="drug">Gentamicina/Tobramicina</td><td>Dosaggio one-daily basato su peso e funzione renale: vedi protocollo aminoglicosidi dedicato</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Dosi riferite a funzione renale normale (CrCl &gt;50 ml/min) e peso corporeo nella norma; vedi scheda successiva per l'aggiustamento in insufficienza renale.</p>
+        <p class="source">Fonte: Stanford Health Care Antimicrobial Dosing Reference Guide, rev. febbraio 2026.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Vancomicina — dosaggio e monitoraggio</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Fase</th><th>Dose</th></tr></thead>
+          <tbody>
+            <tr><td>Dose da carico (paziente critico/sepsi grave)</td><td>25–30 mg/kg ev (peso corporeo reale)</td></tr>
+            <tr><td>Mantenimento</td><td>15–20 mg/kg ev ogni 8–12h, infusione in almeno 60 min per grammo</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Target terapeutico attuale: <b>AUC/MIC 400–600</b> (assumendo MIC = 1 mg/L), monitorato con metodo AUC-guidato (bayesiano o due livelli) piuttosto che con il solo trough. Rivalutare la dose a 24–48h dall'inizio della terapia e a ogni variazione significativa della funzione renale.</p>
+        <p class="source">Fonte: Rybak MJ et al. Therapeutic Monitoring of Vancomycin for Serious MRSA Infections: A Revised Consensus Guideline (ASHP/PIDS/SIDP/IDSA, 2020).</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Aggiustamento posologico per funzione renale</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Farmaco</th><th>CrCl &gt;50 ml/min</th><th>CrCl 10–50 ml/min</th><th>CrCl &lt;10 ml/min</th></tr></thead>
+          <tbody>
+            <tr><td class="drug">Piperacillina/tazobactam</td><td>3,375–4,5 g ogni 6–8h</td><td>CrCl 20–40: 3,375 g ogni 8h (estesa) · CrCl &lt;20: 2,25 g ogni 6h</td><td>2,25 g ogni 8h (estesa) o 2,25 g ogni 12h</td></tr>
+            <tr><td class="drug">Meropenem</td><td>1 g ogni 8h</td><td>CrCl 26–50: 1 g ogni 12h · CrCl 10–25: 0,5 g ogni 12h</td><td>0,5 g ogni 24h</td></tr>
+            <tr><td class="drug">Cefepime</td><td>2 g ogni 8–12h</td><td>CrCl 30–60: 2 g ogni 24h · CrCl 11–29: 1 g ogni 24h</td><td>500 mg ogni 24h</td></tr>
+            <tr><td class="drug">Ceftriaxone</td><td>Nessun aggiustamento</td><td>Nessun aggiustamento</td><td>Nessun aggiustamento (eliminazione biliare compensatoria)</td></tr>
+            <tr><td class="drug">Ampicillina/sulbactam</td><td>3 g ogni 6h</td><td>CrCl 15–30: 3 g ogni 12h</td><td>3 g ogni 24h</td></tr>
+            <tr><td class="drug">Aztreonam</td><td>1–2 g ogni 8h</td><td>CrCl &lt;30: 1 g ogni 8h</td><td>1 g ogni 24h (dose da carico 2 g)</td></tr>
+            <tr><td class="drug">Ciprofloxacina</td><td>400 mg ogni 8–12h</td><td>CrCl 30–50: 400 mg ogni 12h</td><td>200–400 mg ogni 24h</td></tr>
+            <tr><td class="drug">Levofloxacina</td><td>750 mg ogni 24h</td><td>CrCl 20–49: 750 mg ogni 48h</td><td>750 mg x1, poi 500 mg ogni 48h</td></tr>
+            <tr><td class="drug">Metronidazolo</td><td>Nessun aggiustamento</td><td>Nessun aggiustamento</td><td>Cautela per accumulo se CrCl &lt;30 e terapia &gt;1–2 settimane</td></tr>
+            <tr><td class="drug">Vancomicina</td><td colspan="3">Sempre individualizzata (peso, funzione renale, livelli/AUC): non usare schemi fissi — consultare farmacista clinico o protocollo dedicato</td></tr>
+            <tr><td class="drug">Linezolid</td><td colspan="3">Nessun aggiustamento a nessun grado di insufficienza renale</td></tr>
+            <tr><td class="drug">Daptomicina</td><td>4–8 mg/kg ogni 24h (secondo indicazione)</td><td colspan="2">CrCl &lt;30: stesso dosaggio ogni 48h</td></tr>
+            <tr><td class="drug">Gentamicina/Tobramicina</td><td colspan="3">Sempre individualizzata su peso e funzione renale (dosaggio one-daily con livelli) — non usare schemi fissi</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note warn">In dialisi (emodialisi intermittente o CRRT) i dosaggi differiscono sostanzialmente da quelli indicati sopra e vanno individualizzati con il farmacista clinico/nefrologo: questa tabella non è applicabile ai pazienti in trattamento sostitutivo renale.</p>
+        <p class="source">Fonte: Stanford Health Care Antimicrobial Dosing Reference Guide, rev. febbraio 2026.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Calcolatore clearance della creatinina (Cockcroft-Gault)</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Stima la clearance della creatinina per orientare l'aggiustamento posologico degli antibiotici (formula di Cockcroft-Gault, peso corporeo reale).</p>
+        <div class="calc">
+          <div class="calc-row">
+            <div class="calc-field">
+              <label>Età (anni)</label>
+              <input type="number" id="crclAge" step="1" min="0" value="65">
+            </div>
+            <div class="calc-field">
+              <label>Peso (kg)</label>
+              <input type="number" id="crclWeight" step="1" min="0" value="70">
+            </div>
+            <div class="calc-field">
+              <label>Creatinina sierica (mg/dL)</label>
+              <input type="number" id="crclScr" step="0.1" min="0" value="1.0">
+            </div>
+            <div class="calc-field">
+              <label>Sesso</label>
+              <select id="crclSex">
+                <option value="m">Maschio</option>
+                <option value="f">Femmina</option>
+              </select>
+            </div>
+          </div>
+          <div id="crclOut" class="calc-out"></div>
+        </div>
+      </div></div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <strong>Avvertenza clinica:</strong> strumento di supporto alla consultazione, non sostituisce il giudizio clinico né i protocolli in uso presso il proprio reparto/ospedale, né il parere di infettivologia/farmacia clinica per i casi complessi. Verificare sempre farmaco, dose, via di somministrazione e funzione renale prima di ogni prescrizione. I contenuti sono tratti da linee guida internazionali e da una guida di dosaggio antimicrobico ospedaliera di riferimento (vedi fonti in ciascuna scheda) e possono differire dal prontuario o dai protocolli del proprio ospedale.
+</footer>
+
+<script>
+// ---------- tabs ----------
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.target).classList.add('active');
+  });
+});
+
+// ---------- accordion ----------
+document.querySelectorAll('.card-head').forEach(function(head){
+  head.addEventListener('click', function(){
+    head.parentElement.classList.toggle('open');
+  });
+});
+
+// ---------- surgical prophylaxis weight-based dose calculator ----------
+var abxDrugSel = document.getElementById('abxDrugSel');
+var abxWeight = document.getElementById('abxWeight');
+var abxDoseOut = document.getElementById('abxDoseOut');
+
+function computeAbxDose(){
+  var drug = abxDrugSel.value;
+  var w = parseFloat(abxWeight.value);
+  if(!(w > 0)){
+    abxDoseOut.innerHTML = '<span class="err">Inserisci un peso corporeo valido.</span>';
+    return;
+  }
+  if(drug === 'cefazolina'){
+    var dose = w > 120 ? 3 : 2;
+    abxDoseOut.innerHTML =
+      '<div class="big">Cefazolina '+dose+' g ev</div>' +
+      '<p class="note" style="margin-top:6px">Dose standard 2 g; 3 g se peso &gt;120 kg. Ridosaggio intraoperatorio ogni 4h se l\'intervento si protrae.</p>';
+  } else {
+    var dose, infusion;
+    if(w < 80){ dose = 1; infusion = '60 min'; }
+    else if(w < 100){ dose = 1.25; infusion = '75 min'; }
+    else if(w <= 120){ dose = 1.5; infusion = '90 min'; }
+    else { dose = 2; infusion = '120 min'; }
+    abxDoseOut.innerHTML =
+      '<div class="big">Vancomicina '+dose+' g ev</div>' +
+      '<p class="note" style="margin-top:6px">Infondere in almeno '+infusion+' per ridurre il rischio di reazione da infusione. Iniziare 60–120 min prima dell\'incisione. Non richiede ridosaggio intraoperatorio nella maggior parte degli interventi.</p>';
+  }
+}
+abxDrugSel.addEventListener('change', computeAbxDose);
+abxWeight.addEventListener('input', computeAbxDose);
+computeAbxDose();
+
+// ---------- Cockcroft-Gault CrCl calculator ----------
+var crclAge = document.getElementById('crclAge');
+var crclWeight = document.getElementById('crclWeight');
+var crclScr = document.getElementById('crclScr');
+var crclSex = document.getElementById('crclSex');
+var crclOut = document.getElementById('crclOut');
+
+function computeCrCl(){
+  var age = parseFloat(crclAge.value);
+  var w = parseFloat(crclWeight.value);
+  var scr = parseFloat(crclScr.value);
+  var sex = crclSex.value;
+
+  if(!(age > 0) || !(w > 0) || !(scr > 0)){
+    crclOut.innerHTML = '<span class="err">Inserisci età, peso e creatinina, tutti maggiori di zero.</span>';
+    return;
+  }
+
+  var crcl = ((140 - age) * w) / (72 * scr);
+  if(sex === 'f'){ crcl = crcl * 0.85; }
+
+  var category;
+  if(crcl > 50){ category = 'CrCl &gt;50 ml/min — nessun aggiustamento per la maggior parte dei farmaci'; }
+  else if(crcl > 10){ category = 'CrCl 10–50 ml/min — aggiustamento posologico necessario per molti antibiotici'; }
+  else { category = 'CrCl &lt;10 ml/min — aggiustamento posologico importante; valutare dialisi'; }
+
+  crclOut.innerHTML =
+    '<div class="badge-row"><span class="badge">'+crcl.toFixed(0)+' ml/min</span></div>' +
+    '<div class="big">'+crcl.toFixed(0)+' ml/min</div>' +
+    '<p class="note" style="margin-top:6px">'+category+'. Formula di Cockcroft-Gault (peso corporeo reale): stima approssimativa, da correlare con il quadro clinico complessivo (età estreme, obesità, massa muscolare ridotta, instabilità della funzione renale in acuto).</p>';
+}
+[crclAge, crclWeight, crclScr, crclSex].forEach(function(el){ el.addEventListener('input', computeCrCl); el.addEventListener('change', computeCrCl); });
+computeCrCl();
+</script>
+
+</body>
+</html>
