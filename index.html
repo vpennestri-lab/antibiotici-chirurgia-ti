@@ -12,6 +12,7 @@
     --teal:#0d7d6f; --teal-light:#e7f5f2;
     --indigo:#3730a3; --indigo-light:#eef0fd;
     --plum:#8a1c4d; --plum-light:#fbe9f0;
+    --gold:#92400e; --gold-light:#fdf1e0;
     --ink:#1e2430; --sub:#5b6472; --line:#e2e6ec; --bg:#f6f7f9; --card:#ffffff;
     --ok:#0d9488; --warn:#b45309;
   }
@@ -34,6 +35,7 @@
   .chir .card-head{border-left:4px solid var(--teal);}
   .ti .card-head{border-left:4px solid var(--indigo);}
   .amr .card-head{border-left:4px solid var(--plum);}
+  .fungal .card-head{border-left:4px solid var(--gold);}
   .chevron{font-size:.8rem; color:var(--sub); transition:transform .2s; flex-shrink:0;}
   .card.open .chevron{transform:rotate(180deg);}
   .card-body{max-height:0; overflow:hidden; transition:max-height .25s ease;}
@@ -48,6 +50,7 @@
   .chir th{background:var(--teal-light);}
   .ti th{background:var(--indigo-light);}
   .amr th{background:var(--plum-light);}
+  .fungal th{background:var(--gold-light);}
   td.num{white-space:nowrap;}
   .note{font-size:.74rem; color:var(--sub); margin:6px 0 0; line-height:1.5;}
   .note.warn{color:var(--warn);}
@@ -63,6 +66,7 @@
   .calc-out .big{font-size:1.2rem; font-weight:700; color:var(--teal);}
   .ti .calc-out .big{color:var(--indigo);}
   .amr .calc-out .big{color:var(--plum);}
+  .fungal .calc-out .big{color:var(--gold);}
   .calc-out .err{color:#b91c1c; font-size:.8rem;}
   .badge-row{display:flex; gap:8px; margin:6px 0; flex-wrap:wrap;}
   .badge{background:var(--teal-light); color:var(--teal); font-size:.72rem; font-weight:700; padding:4px 9px; border-radius:20px;}
@@ -94,6 +98,7 @@
     <div class="tab active" data-target="chirurgia">Profilassi chirurgica<span class="sub">antibiotico-profilassi</span></div>
     <div class="tab" data-target="ti">Terapia Intensiva<span class="sub">terapia empirica · dosaggi</span></div>
     <div class="tab" data-target="amr">Resistenze note<span class="sub">terapia mirata su antibiogramma</span></div>
+    <div class="tab" data-target="fungal">Infezioni fungine<span class="sub">antifungini · sensibilità per specie</span></div>
   </div>
 </header>
 
@@ -599,6 +604,136 @@
         <p class="note warn">Cefiderocol e sulbactam/durlobactam richiedono somministrazione <b>più frequente</b> (non meno) con clearance renale elevata (CrCl ≥120–130 ml/min), per il rischio di sotto-esposizione: verificare sempre la funzione renale attuale.</p>
         <p class="note">Per l'aggiustamento in insufficienza renale di questi farmaci, fare riferimento alla scheda tecnica del singolo prodotto: la linea guida IDSA non fornisce una tabella unica di riduzione posologica per questa categoria.</p>
         <p class="source">Fonte: Tamma PD et al. IDSA 2026 Guidance on the Treatment of Antimicrobial-Resistant Gram-Negative Infections, Table 1 (dosaggio adulto, funzione renale ed epatica normali).</p>
+      </div></div>
+    </div>
+
+  </section>
+
+  <!-- ==================== INFEZIONI FUNGINE ==================== -->
+  <section id="fungal" class="section fungal">
+
+    <div class="card open">
+      <div class="card-head"><h2>Come usare questa scheda</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Sospettare un'infezione fungina invasiva (IFI) in pazienti critici con <b>fattori di rischio</b>: nutrizione parenterale totale, chirurgia addominale recente/deiscenza anastomotica, colonizzazione multifocale da <i>Candida</i>, terapia antibiotica ad ampio spettro prolungata, CVC, emodialisi, neutropenia, terapia steroidea/immunosoppressiva ad alto dosaggio, trapianto d'organo o di cellule staminali.</p>
+        <p class="note">Biomarcatori utili: <b>(1→3)-β-D-glucano</b> (screening candidiasi invasiva/aspergillosi, elevato valore predittivo negativo), <b>galattomannano</b> su siero/BAL (aspergillosi), <b>antigene criptococcico</b> su siero/liquor. Il Candida score e gli indici di colonizzazione aiutano a stratificare il rischio nel paziente critico non neutropenico.</p>
+        <p class="note warn">Le sensibilità qui riportate sono pattern generali di specie: la conferma va sempre cercata con l'antibiogramma micotico (MIC), soprattutto per <i>C. glabrata</i>, <i>C. parapsilosis</i> e <i>C. auris</i>, dove la resistenza è specie- e clade-specifica.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Specie fungine → sensibilità e terapia di prima scelta</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Specie</th><th>Pattern di resistenza</th><th>Terapia di prima scelta</th></tr></thead>
+          <tbody>
+            <tr><td><span class="drug">Candida albicans</span></td><td>Generalmente sensibile a tutte le classi</td><td>Echinocandina; step-down a fluconazolo se stabile e isolato sensibile</td></tr>
+            <tr><td><span class="drug">Candida glabrata</span> (Nakaseomyces glabratus)</td><td>Sensibilità ridotta/variabile al fluconazolo; resistenza agli azoli ed emergente alle echinocandine (mutazioni FKS) — sempre richiedere antibiogramma</td><td>Echinocandina; verificare sensibilità prima di eventuale step-down (fluconazolo <b>non</b> raccomandato empiricamente)</td></tr>
+            <tr><td><span class="drug">Candida krusei</span></td><td>Resistenza <b>intrinseca</b> al fluconazolo</td><td>Echinocandina; alternativa voriconazolo se sensibile</td></tr>
+            <tr><td><span class="drug">Candida parapsilosis</span></td><td>MIC più elevate alle echinocandine per polimorfismo FKS naturale (efficacia clinica comunque generalmente mantenuta); resistenza agli azoli in aumento in alcune aree</td><td>Fluconazolo se isolato sensibile e paziente stabile; echinocandina se instabile/shock</td></tr>
+            <tr><td><span class="drug">Candida tropicalis</span></td><td>Generalmente sensibile; resistenza agli azoli in aumento in alcune aree geografiche</td><td>Echinocandina; step-down a fluconazolo se sensibile</td></tr>
+            <tr><td><span class="drug">Candidozyma (Candida) auris</span></td><td>Multi-resistente: ~90% resistente al fluconazolo, 15–35% all'amfotericina B; resistenza alle echinocandine non comune (2–7%) ma in aumento, isolati pan-resistenti segnalati</td><td>Echinocandina come prima scelta; se non risposta clinica a 5 giorni, richiedere antibiogramma completo e consulenza infettivologica per opzioni di salvataggio</td></tr>
+            <tr><td><span class="drug">Aspergillus fumigatus</span></td><td>Generalmente sensibile agli azoli; resistenza emergente (mutazioni cyp51A, spesso di origine ambientale/agricola) — variabile per area geografica</td><td>Voriconazolo o isavuconazolo</td></tr>
+            <tr><td><span class="drug">Cryptococcus neoformans</span></td><td>Sensibile ad amfotericina B e flucitosina; sensibilità al fluconazolo generalmente buona ma in graduale riduzione in alcune aree</td><td>Amfotericina B liposomiale + flucitosina (induzione), poi fluconazolo (consolidamento/mantenimento)</td></tr>
+            <tr><td><span class="drug">Mucorales</span> (Rhizopus, Mucor, Rhizomucor, Lichtheimia)</td><td>Resistenza <b>intrinseca</b> a voriconazolo, fluconazolo ed echinocandine</td><td>Amfotericina B liposomiale ad alto dosaggio + controllo chirurgico della fonte; isavuconazolo o posaconazolo come alternative</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Nei pazienti con storia di esposizione recente a un'echinocandina o con infezione da <i>C. glabrata</i>/<i>C. parapsilosis</i>, va sempre richiesto il test di sensibilità alle echinocandine.</p>
+        <p class="source">Fonti: Pappas PG et al. IDSA Clinical Practice Guideline for the Management of Candidiasis, 2016; CDC — Clinical Treatment of C. auris Infections, 2024; Patterson TF et al. IDSA Practice Guidelines for Aspergillosis, 2016.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Dosaggi degli antifungini (adulto, funzione renale/epatica normale)</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <h3 class="sub-h">Echinocandine</h3>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Farmaco</th><th>Dose e modalità</th></tr></thead>
+          <tbody>
+            <tr><td class="drug">Caspofungin</td><td>Carico 70 mg ev, poi 50 mg/die ev (70 mg/die se peso &gt;80 kg)</td></tr>
+            <tr><td class="drug">Micafungin</td><td>100 mg/die ev (candidemia); 150 mg/die ev per aspergillosi come terapia di associazione/salvataggio</td></tr>
+            <tr><td class="drug">Anidulafungin</td><td>Carico 200 mg ev, poi 100 mg/die ev</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <h3 class="sub-h">Azoli</h3>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Farmaco</th><th>Dose e modalità</th></tr></thead>
+          <tbody>
+            <tr><td class="drug">Fluconazolo</td><td>Candidemia: carico 800 mg (12 mg/kg) ev/os, poi 400–800 mg/die. Meningite criptococcica: 1200 mg/die in induzione/alternativa, 400–800 mg/die in consolidamento, 200 mg/die in mantenimento</td></tr>
+            <tr><td class="drug">Voriconazolo</td><td>Carico 6 mg/kg ev ogni 12h per 2 dosi (die 1), poi 4 mg/kg ev ogni 12h; step-down orale 200–300 mg ogni 12h. Monitoraggio TDM raccomandato (target 1–5,5 µg/mL)</td></tr>
+            <tr><td class="drug">Isavuconazolo</td><td>Carico 200 mg (isavuconazonio 372 mg) ogni 8h per 6 dosi (48h), poi 200 mg/die ev o os. Non richiede aggiustamento renale</td></tr>
+            <tr><td class="drug">Posaconazolo</td><td>Compressa gastroresistente/ev: 300 mg ogni 12h il giorno 1, poi 300 mg/die</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <h3 class="sub-h">Polieni e altri</h3>
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Farmaco</th><th>Dose e modalità</th></tr></thead>
+          <tbody>
+            <tr><td class="drug">Amfotericina B liposomiale</td><td>3–5 mg/kg/die ev (candidiasi invasiva/aspergillosi); 5–10 mg/kg/die per mucormicosi ad alto dosaggio; 10 mg/kg in dose singola nell'induzione della meningite criptococcica (schema OMS 2022)</td></tr>
+            <tr><td class="drug">Flucitosina</td><td>25 mg/kg ogni 6h os/ev (100 mg/kg/die in 4 dosi); monitoraggio dei livelli plasmatici raccomandato per tossicità midollare</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note warn">Amfotericina B liposomiale è nefrotossica: monitorare funzione renale ed elettroliti (in particolare potassio e magnesio) durante il trattamento.</p>
+        <p class="source">Fonti: Pappas PG et al. IDSA 2016; Patterson TF et al. IDSA 2016; Cornely OA et al. ECMM/MSGERC Global Guideline for Mucormycosis, 2019; WHO Guidelines for Diagnosing, Preventing and Managing Cryptococcal Disease, 2022.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Candidemia e candidiasi invasiva</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Terapia iniziale: <b>echinocandina</b> in tutti i pazienti, incluso il paziente critico. Il fluconazolo è un'alternativa accettabile solo in pazienti non critici con bassa probabilità di specie fluconazolo-resistente.</p>
+        <p class="note">Step-down a fluconazolo entro 5–7 giorni se: paziente clinicamente stabile, isolato sensibile al fluconazolo (es. <i>C. albicans</i>), ed emocolture di controllo negative.</p>
+        <p class="note">Durata: <b>almeno 14 giorni</b> dalla prima emocoltura negativa e dalla risoluzione dei segni/sintomi, in assenza di complicanze metastatiche.</p>
+        <p class="note warn">Rimuovere il catetere venoso centrale il prima possibile se rappresenta la fonte presunta e la rimozione è sicura. Eseguire fondoscopia dilatata (endoftalmite) nei pazienti non neutropenici.</p>
+        <p class="source">Fonte: Pappas PG et al. IDSA Clinical Practice Guideline for the Management of Candidiasis, 2016.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Aspergillosi polmonare invasiva</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Terapia di prima scelta: <b>voriconazolo</b> o <b>isavuconazolo</b> (efficacia comparabile, isavuconazolo con minore tossicità epatica/oculare e nessun aggiustamento renale).</p>
+        <p class="note">Alternative: amfotericina B liposomiale, soprattutto se sospetta resistenza agli azoli o intolleranza/interazioni farmacologiche rilevanti.</p>
+        <p class="note">Durata minima: 6–12 settimane, in base a risposta clinico-radiologica e stato immunitario del paziente.</p>
+        <p class="source">Fonte: Patterson TF et al. Practice Guidelines for the Diagnosis and Management of Aspergillosis, IDSA 2016.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Mucormicosi</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <p class="note">Terapia di prima scelta: <b>amfotericina B liposomiale ad alto dosaggio</b> (5–10 mg/kg/die), sempre in associazione a <b>controllo chirurgico</b> precoce e aggressivo della fonte, quando possibile — è l'intervento con il maggiore impatto sulla prognosi.</p>
+        <p class="note">Alternative (moderata evidenza): isavuconazolo o posaconazolo ev/compressa gastroresistente, in monoterapia se amfotericina B non disponibile/tollerata, o come terapia di step-down dopo risposta iniziale.</p>
+        <p class="note warn">Evitare amfotericina B desossicolato per l'elevata nefrotossicità: preferire sempre la formulazione liposomiale.</p>
+        <p class="note">Durata: settimane-mesi, fino a risoluzione clinico-radiologica e correzione, ove possibile, del difetto immunitario/metabolico sottostante (es. controllo glicemico).</p>
+        <p class="source">Fonte: Cornely OA et al. Global Guideline for the Diagnosis and Management of Mucormycosis, ECMM/MSGERC "One World One Guideline", 2019.</p>
+      </div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Meningite criptococcica — induzione, consolidamento, mantenimento</h2><span class="chevron">▾</span></div>
+      <div class="card-body"><div class="card-body-inner">
+        <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Fase</th><th>Farmaci e durata</th></tr></thead>
+          <tbody>
+            <tr><td class="drug">Induzione (IDSA 2010)</td><td>Amfotericina B liposomiale 3–4 mg/kg/die + flucitosina 100 mg/kg/die (4 dosi) per almeno 2 settimane</td></tr>
+            <tr><td class="drug">Induzione (OMS 2022, alternativa)</td><td>Amfotericina B liposomiale 10 mg/kg in dose singola + flucitosina 100 mg/kg/die + fluconazolo 1200 mg/die, per 2 settimane</td></tr>
+            <tr><td class="drug">Consolidamento</td><td>Fluconazolo 400–800 mg/die per almeno 8 settimane</td></tr>
+            <tr><td class="drug">Mantenimento</td><td>Fluconazolo 200 mg/die per almeno 1 anno (paziente HIV+: fino a ricostituzione immunitaria stabile)</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <p class="note">Monitorare e trattare attivamente l'ipertensione endocranica con puntura lombare evacuativa ripetuta: è un determinante maggiore della mortalità, indipendente dalla terapia antifungina.</p>
+        <p class="source">Fonti: WHO Guidelines for Diagnosing, Preventing and Managing Cryptococcal Disease, 2022; Perfect JR et al. IDSA Clinical Practice Guidelines for Cryptococcal Disease, 2010.</p>
       </div></div>
     </div>
 
